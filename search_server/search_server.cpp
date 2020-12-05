@@ -73,11 +73,11 @@ public:
       DocumentData{ ComputeAverageRating(ratings), status });
   }
 
-  template <typename Filter>
+  template <typename Predicate>
   vector<Document> FindTopDocuments(const string& raw_query,
-    Filter filter) const {
+    Predicate predicate) const {
     const Query query = ParseQuery(raw_query);
-    auto matched_documents = FindAllDocuments(query, filter);
+    auto matched_documents = FindAllDocuments(query, predicate);
 
     sort(matched_documents.begin(), matched_documents.end(),
       [](const Document& lhs, const Document& rhs) {
@@ -205,8 +205,8 @@ private:
       word_to_document_freqs_.at(word).size());
   }
 
-  template <typename Filter>
-  vector<Document> FindAllDocuments(const Query& query, Filter filter) const {
+  template <typename Predicate>
+  vector<Document> FindAllDocuments(const Query& query, Predicate predicate) const {
     map<int, double> document_to_relevance;
     for (const string& word : query.plus_words) {
       if (word_to_document_freqs_.count(word) == 0) {
@@ -216,7 +216,7 @@ private:
       for (const auto [document_id, term_freq] :
         word_to_document_freqs_.at(word)) {
         const DocumentData& doc = documents_.at(document_id);
-        if (filter(document_id, doc.status, doc.rating)) {
+        if (predicate(document_id, doc.status, doc.rating)) {
           document_to_relevance[document_id] +=
             term_freq * inverse_document_freq;
         }
