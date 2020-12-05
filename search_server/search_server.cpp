@@ -1,4 +1,4 @@
-// search_server_s1_t2_v2.cpp
+п»ї// search_server_s1_t2_v2.cpp
 
 #include <algorithm>
 #include <cmath>
@@ -237,7 +237,7 @@ class SearchServer {
   }
 };
 
-// ==================== для примера =========================
+// ==================== РґР»СЏ РїСЂРёРјРµСЂР° =========================
 
 void PrintDocument(const Document& document) {
   cout << "{ "s
@@ -246,28 +246,28 @@ void PrintDocument(const Document& document) {
        << "rating = "s << document.rating << " }"s << endl;
 }
 
-int main() {
+int main() {  
   SearchServer search_server;
-  search_server.SetStopWords("и в на"s);
+  search_server.SetStopWords("Рё РІ РЅР°"s);
 
-  search_server.AddDocument(0, "белый кот и модный ошейник"s,
+  search_server.AddDocument(0, "Р±РµР»С‹Р№ РєРѕС‚ Рё РјРѕРґРЅС‹Р№ РѕС€РµР№РЅРёРє"s,
                             DocumentStatus::ACTUAL, {8, -3});
-  search_server.AddDocument(1, "пушистый кот пушистый хвост"s,
+  search_server.AddDocument(1, "РїСѓС€РёСЃС‚С‹Р№ РєРѕС‚ РїСѓС€РёСЃС‚С‹Р№ С…РІРѕСЃС‚"s,
                             DocumentStatus::ACTUAL, {7, 2, 7});
-  search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s,
+  search_server.AddDocument(2, "СѓС…РѕР¶РµРЅРЅС‹Р№ РїС‘СЃ РІС‹СЂР°Р·РёС‚РµР»СЊРЅС‹Рµ РіР»Р°Р·Р°"s,
                             DocumentStatus::ACTUAL, {5, -12, 2, 1});
-  search_server.AddDocument(3, "ухоженный скворец евгений"s,
+  search_server.AddDocument(3, "СѓС…РѕР¶РµРЅРЅС‹Р№ СЃРєРІРѕСЂРµС† РµРІРіРµРЅРёР№"s,
                             DocumentStatus::BANNED, {9});
 
   cout << "ACTUAL by default:"s << endl;
   for (const Document& document :
-       search_server.FindTopDocuments("пушистый ухоженный кот"s)) {
+       search_server.FindTopDocuments("РїСѓС€РёСЃС‚С‹Р№ СѓС…РѕР¶РµРЅРЅС‹Р№ РєРѕС‚"s)) {
     PrintDocument(document);
   }
 
   cout << "ACTUAL:"s << endl;
   for (const Document &document : search_server.FindTopDocuments(
-           "пушистый ухоженный кот"s,
+           "РїСѓС€РёСЃС‚С‹Р№ СѓС…РѕР¶РµРЅРЅС‹Р№ РєРѕС‚"s,
            [](int document_id, DocumentStatus status, int rating) {
              return status == DocumentStatus::ACTUAL;
            })) {
@@ -276,7 +276,7 @@ int main() {
 
   cout << "Even ids:"s << endl;
   for (const Document &document : search_server.FindTopDocuments(
-           "пушистый ухоженный кот"s,
+           "РїСѓС€РёСЃС‚С‹Р№ СѓС…РѕР¶РµРЅРЅС‹Р№ РєРѕС‚"s,
            [](int document_id, DocumentStatus status, int rating) {
              return document_id % 2 == 0;
            })) {
