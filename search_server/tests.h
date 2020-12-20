@@ -67,14 +67,14 @@ void TestRelevanceCalculation() {
 	ASSERT(abs(found_docs[2].relevance - 0.08) < epsilon);
 }
 
-void TestSorting() {	
+void TestSorting() {
 	SearchServer server;
 	server.AddDocument(1, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(2, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	const auto found_docs = server.FindTopDocuments("fluffy well-groomed cat"s);
 	ASSERT_EQUAL(found_docs.size(), 3);
-	ASSERT(found_docs[0].relevance >= found_docs[1].relevance && found_docs[1].relevance >= found_docs[2].relevance);	
+	ASSERT(found_docs[0].relevance >= found_docs[1].relevance && found_docs[1].relevance >= found_docs[2].relevance);
 }
 
 void TestRatingCalculation() {
