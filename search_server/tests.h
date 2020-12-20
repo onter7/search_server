@@ -74,14 +74,15 @@ void TestSorting() {
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	const auto found_docs = server.FindTopDocuments("fluffy well-groomed cat"s);
 	ASSERT_EQUAL(found_docs.size(), 3);
-	ASSERT(found_docs[0].relevance >= found_docs[1].relevance && found_docs[1].relevance >= found_docs[2].relevance);
+	ASSERT(found_docs[0].relevance >= found_docs[1].relevance);
+	ASSERT(found_docs[1].relevance >= found_docs[2].relevance);
 }
 
 void TestRatingCalculation() {
 	SearchServer server;
 	server.AddDocument(1, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	const auto found_docs = server.FindTopDocuments("cat"s);
-	ASSERT_EQUAL(server.GetDocumentCount(), 1);
+	ASSERT_EQUAL(found_docs.size(), 1);
 	ASSERT_EQUAL(found_docs[0].rating, 2);
 }
 
