@@ -1,5 +1,27 @@
 #pragma once
 
+void TestConstructors() {
+	{
+		const vector<string> stop_words = { "in"s, "the"s };
+		SearchServer server(stop_words);
+		server.AddDocument(42, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
+		ASSERT(server.FindTopDocuments("in"s).empty());
+	}
+
+	{
+		const set<string> stop_words = { "in"s, "the"s };
+		SearchServer server(stop_words);
+		server.AddDocument(42, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
+		ASSERT(server.FindTopDocuments("in"s).empty());
+	}
+
+	{
+		SearchServer server("    in    the     "s);
+		server.AddDocument(42, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
+		ASSERT(server.FindTopDocuments("in"s).empty());
+	}
+}
+
 void TestExcludeStopWordsFromAddedDocumentContent() {
 	{
 		SearchServer server;
@@ -11,8 +33,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
 	}
 
 	{
-		SearchServer server;
-		server.SetStopWords("in the"s);
+		SearchServer server("in the"s);
 		server.AddDocument(42, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 		ASSERT(server.FindTopDocuments("in"s).empty());
 	}
@@ -131,6 +152,7 @@ void TestSearchDocumentsWithStatus() {
 }
 
 void TestSearchServer() {
+	RUN_TEST(TestConstructors);
 	RUN_TEST(TestExcludeStopWordsFromAddedDocumentContent);
 	RUN_TEST(TestAddDocuments);
 	RUN_TEST(TestMinusWords);

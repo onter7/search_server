@@ -20,19 +20,35 @@ vector<string> SplitIntoWords(const string& text) {
 	string word;
 	for (const char c : text) {
 		if (c == ' ') {
-			words.push_back(word);
-			word = "";
+			if (!word.empty()) {
+				words.push_back(word);
+				word = "";
+			}			
 		}
 		else {
 			word += c;
 		}
 	}
-	words.push_back(word);
+	if (!word.empty()) {
+		words.push_back(word);
+	}	
 
 	return words;
 }
 
 struct Document {
+	Document() 
+		: id(0)
+		, relevance(0.0)
+		, rating(0) 
+	{}
+
+	Document(int new_id, double new_relevance, int new_rating)
+		: id(new_id)
+		, relevance(new_relevance)
+		, rating(new_rating)
+	{}
+
 	int id;
 	double relevance;
 	int rating;
@@ -47,8 +63,17 @@ enum class DocumentStatus {
 
 class SearchServer {
 public:
-	void SetStopWords(const string& text) {
-		for (const string& word : SplitIntoWords(text)) {
+	SearchServer() = default;
+
+	SearchServer(const string& stop_words) {
+		for (const string& word : SplitIntoWords(stop_words)) {
+			stop_words_.insert(word);
+		}
+	}
+
+	template <typename Collection>
+	SearchServer(Collection collection) {
+		for (const string& word : collection) {
 			stop_words_.insert(word);
 		}
 	}
