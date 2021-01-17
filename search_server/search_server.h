@@ -23,7 +23,7 @@ vector<string> SplitIntoWords(const string& text) {
 			if (!word.empty()) {
 				words.push_back(word);
 				word = "";
-			}			
+			}
 		}
 		else {
 			word += c;
@@ -31,16 +31,16 @@ vector<string> SplitIntoWords(const string& text) {
 	}
 	if (!word.empty()) {
 		words.push_back(word);
-	}	
+	}
 
 	return words;
 }
 
 struct Document {
-	Document() 
+	Document()
 		: id(0)
 		, relevance(0.0)
-		, rating(0) 
+		, rating(0)
 	{}
 
 	Document(int new_id, double new_relevance, int new_rating)
@@ -67,6 +67,9 @@ public:
 
 	SearchServer(const string& stop_words) {
 		for (const string& word : SplitIntoWords(stop_words)) {
+			if (!IsValidWord(word)) {
+				throw invalid_argument(word);
+			}
 			stop_words_.insert(word);
 		}
 	}
@@ -74,19 +77,29 @@ public:
 	template <typename Collection>
 	SearchServer(Collection collection) {
 		for (const string& word : collection) {
+			if (!IsValidWord(word)) {
+				throw invalid_argument(word);
+			}
 			stop_words_.insert(word);
 		}
 	}
 
 	void AddDocument(int document_id, const string& document,
 		DocumentStatus status, const vector<int>& ratings) {
+		if (!IsValidDocumentId(document_id)) {
+			throw invalid_argument(to_string(document_id));
+		}
 		const vector<string> words = SplitIntoWordsNoStop(document);
 		const double inv_word_count = 1.0 / words.size();
 		for (const string& word : words) {
+			if (!IsValidWord(word)) {
+				throw invalid_argument(word);
+			}
 			word_to_document_freqs_[word][document_id] += inv_word_count;
 		}
 		documents_.emplace(document_id,
 			DocumentData{ ComputeAverageRating(ratings), status });
+		document_ids_.push_back(document_id);
 	}
 
 	template <typename Predicate>
@@ -146,6 +159,13 @@ public:
 		return { matched_words, documents_.at(document_id).status };
 	}
 
+	int GetDocumentId(int index) const {
+		if (index < 0 || index >= static_cast<int>(documents_.size())) {
+			throw out_of_range(to_string(index));
+		}
+		return document_ids_[index];
+	}
+
 private:
 	struct DocumentData {
 		int rating;
@@ -155,10 +175,26 @@ private:
 	set<string> stop_words_;
 	map<string, map<int, double>> word_to_document_freqs_;
 	map<int, DocumentData> documents_;
+	vector<int> document_ids_;
+
+	static bool IsValidWord(const string& word) {
+		// A valid word must not contain special characters
+		return none_of(word.begin(), word.end(), [](char c) {
+			return c >= '\0' && c < ' ';
+			});
+	}
+
+	static bool IsValidMinusWord(const string& minus_word) {
+		return minus_word.size() > 1 && minus_word[1] != '-';
+	}
 
 	bool IsStopWord(const string& word) const {
 		return stop_words_.count(word) > 0;
 	}
+
+	bool IsValidDocumentId(int document_id) const {
+		return document_id >= 0 && documents_.count(document_id) == 0;
+	}	
 
 	vector<string> SplitIntoWordsNoStop(const string& text) const {
 		vector<string> words;
@@ -185,9 +221,15 @@ private:
 	};
 
 	QueryWord ParseQueryWord(string text) const {
+		if (!IsValidWord(text)) {
+			throw invalid_argument(text);
+		}
 		bool is_minus = false;
 		// Word shouldn't be empty
 		if (text[0] == '-') {
+			if (!IsValidMinusWord(text)) {
+				throw invalid_argument(text);
+			}
 			is_minus = true;
 			text = text.substr(1);
 		}
@@ -197,7 +239,7 @@ private:
 	struct Query {
 		set<string> plus_words;
 		set<string> minus_words;
-	};
+	};	
 
 	Query ParseQuery(const string& text) const {
 		Query query;
