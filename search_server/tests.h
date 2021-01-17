@@ -24,7 +24,7 @@ void TestConstructors() {
 
 void TestExcludeStopWordsFromAddedDocumentContent() {
 	{
-		SearchServer server;
+		SearchServer server({});
 		server.AddDocument(42, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 		const auto found_docs = server.FindTopDocuments("in"s);
 		ASSERT_EQUAL(found_docs.size(), 1);
@@ -40,7 +40,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
 }
 
 void TestAddDocuments() {
-	SearchServer server;
+	SearchServer server({});
 	ASSERT_EQUAL(server.GetDocumentCount(), 0);
 	server.AddDocument(1, "black white red yellow"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	ASSERT_EQUAL(server.GetDocumentCount(), 1);
@@ -50,7 +50,7 @@ void TestAddDocuments() {
 
 void TestMinusWords() {
 	{
-		SearchServer server;
+		SearchServer server({});
 		server.AddDocument(1, "black white red yellow"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 		server.AddDocument(2, "black blue green purple"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 		const auto found_docs = server.FindTopDocuments("black -blue"s);
@@ -61,7 +61,7 @@ void TestMinusWords() {
 }
 
 void TestMatchDocuments() {
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "black white red green blue"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 
 	{
@@ -78,7 +78,7 @@ void TestMatchDocuments() {
 
 void TestRelevanceCalculation() {
 	const double epsilon = 0.01;
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(2, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
@@ -89,7 +89,7 @@ void TestRelevanceCalculation() {
 }
 
 void TestSorting() {
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(2, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
@@ -100,7 +100,7 @@ void TestSorting() {
 }
 
 void TestRatingCalculation() {
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "cat in the city"s, DocumentStatus::ACTUAL, { 1, 2, 3 });
 	const auto found_docs = server.FindTopDocuments("cat"s);
 	ASSERT_EQUAL(found_docs.size(), 1);
@@ -108,7 +108,7 @@ void TestRatingCalculation() {
 }
 
 void TestDocumentFiltering() {
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 1, 1, 1 });
 	server.AddDocument(2, "fluffy cat fluffy tail"s, DocumentStatus::BANNED, { 2, 2, 2 });
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::IRRELEVANT, { 3, 3, 3 });
@@ -141,7 +141,7 @@ void TestDocumentFiltering() {
 }
 
 void TestSearchDocumentsWithStatus() {
-	SearchServer server;
+	SearchServer server({});
 	server.AddDocument(1, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 1, 1, 1 });
 	server.AddDocument(2, "fluffy cat fluffy tail"s, DocumentStatus::BANNED, { 2, 2, 2 });
 	server.AddDocument(3, "well-groomed dog expressive eyes"s, DocumentStatus::IRRELEVANT, { 3, 3, 3 });
