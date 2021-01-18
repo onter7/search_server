@@ -69,7 +69,7 @@ public:
 
 	template <typename StopWords>
 	explicit SearchServer(const StopWords& stop_words)
-		: stop_words_(GetWordsSet(stop_words))
+		: stop_words_(GetValidWordsSet(stop_words))
 	{}
 
 	void AddDocument(int document_id, const string& document,
@@ -163,7 +163,7 @@ private:
 	vector<int> document_ids_;
 
 	template <typename Words>
-	static set<string> GetWordsSet(const Words& words) {		
+	static set<string> GetValidWordsSet(const Words& words) {		
 		set<string> result;
 		for (const string& word : words) {
 			if (!IsValidWord(word)) {
