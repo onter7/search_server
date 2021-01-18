@@ -64,12 +64,12 @@ enum class DocumentStatus {
 class SearchServer {
 public:
 	explicit SearchServer(const string& stop_words)
-		: stop_words_(move(GetStopWords(SplitIntoWords(stop_words))))
+		: SearchServer(SplitIntoWords(stop_words))
 	{}
 
-	template <typename Container>
-	explicit SearchServer(const Container& container)
-		: stop_words_(move(GetStopWords(container)))
+	template <typename StopWords>
+	explicit SearchServer(const StopWords& stop_words)
+		: stop_words_(GetWordsSet(stop_words))
 	{}
 
 	void AddDocument(int document_id, const string& document,
@@ -162,10 +162,10 @@ private:
 	map<int, DocumentData> documents_;
 	vector<int> document_ids_;
 
-	template <typename Container>
-	static set<string> GetStopWords(const Container& container) {		
+	template <typename Words>
+	static set<string> GetWordsSet(const Words& words) {		
 		set<string> result;
-		for (const string& word : container) {
+		for (const string& word : words) {
 			if (!IsValidWord(word)) {
 				throw invalid_argument("Invalid stop word: " + word);
 			}
