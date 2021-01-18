@@ -167,7 +167,7 @@ private:
 		set<string> result;
 		for (const string& word : words) {
 			if (!IsValidWord(word)) {
-				throw invalid_argument("Invalid stop word: " + word);
+				throw invalid_argument("Invalid word: " + word);
 			}
 			result.insert(word);
 		}
