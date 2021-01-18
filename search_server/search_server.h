@@ -148,7 +148,7 @@ public:
 	}
 
 	int GetDocumentId(int index) const {
-		return document_ids_[index];
+		return document_ids_.at(index);
 	}
 
 private:
