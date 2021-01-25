@@ -1,19 +1,10 @@
-#include <algorithm>
-#include <iostream>
-#include <map>
-#include <set>
-#include <string>
-#include <tuple>
-#include <vector>
-
-using namespace std;
-
 #include "search_server.h"
 #include "request_queue.h"
+#include "paginator.h"
 #include "test_runner.h"
 #include "tests.h"
 
-// ------------ ѕример использовани€ ----------------
+using namespace std;
 
 void PrintDocument(const Document& document) {
     cout << "{ "s
@@ -94,5 +85,6 @@ int main() {
     // первый запрос удален, 1437 запросов с нулевым результатом
     request_queue.AddFindRequest("скворец"s);
     cout << "«апросов, по которым ничего не нашлось "s << request_queue.GetNoResultRequests();
+
     return 0;
 }

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <algorithm>
-#include <string>
-#include <set>
 #include <map>
-#include <vector>
+#include <set>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "string_processing.h"
 #include "document.h"
@@ -38,9 +38,9 @@ public:
 		const Query query = ParseQuery(raw_query);
 		auto matched_documents = FindAllDocuments(query, predicate);
 
-		sort(matched_documents.begin(), matched_documents.end(),
+		std::sort(matched_documents.begin(), matched_documents.end(),
 			[](const Document& lhs, const Document& rhs) {
-				if (abs(lhs.relevance - rhs.relevance) < 1e-6) {
+				if (std::abs(lhs.relevance - rhs.relevance) < 1e-6) {
 					return lhs.rating > rhs.rating;
 				}
 				else {
