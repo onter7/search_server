@@ -8,14 +8,14 @@ public:
 	IteratorRange(Iterator begin, Iterator end)
 		: first_(begin)
 		, last_(end)
-		, size_(distance(first_, last_)) 
+		, size_(distance(first_, last_))
 	{}
 
-	Iterator begin() const { return first_;	}
+	Iterator begin() const { return first_; }
 
 	Iterator end() const { return last_; }
 
-	size_t size() const { return size_;	}
+	size_t size() const { return size_; }
 
 private:
 	Iterator first_, last_;
@@ -44,11 +44,11 @@ public:
 		}
 	}
 
-	auto begin() const { return pages_.begin();	}
+	auto begin() const { return pages_.begin(); }
 
-	auto end() const { return pages_.end();	}
+	auto end() const { return pages_.end(); }
 
-	size_t size() const { return pages_.size();	}
+	size_t size() const { return pages_.size(); }
 
 private:
 	vector<IteratorRange<Iterator>> pages_;
