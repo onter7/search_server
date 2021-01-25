@@ -1,4 +1,6 @@
+#include "search_server.h"
 #include "tests.h"
+#include "test_runner.h"
 
 using namespace std::string_literals;
 

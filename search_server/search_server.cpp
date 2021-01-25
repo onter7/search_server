@@ -1,3 +1,4 @@
+#include "string_processing.h"
 #include "search_server.h"
 
 SearchServer::SearchServer(const std::string& stop_words)
@@ -63,7 +64,7 @@ int SearchServer::GetDocumentId(int index) const {
 
 bool SearchServer::IsValidWord(const std::string& word) {
 	// A valid word must not contain special characters
-	return none_of(word.begin(), word.end(), [](char c) {
+	return std::none_of(word.begin(), word.end(), [](char c) {
 		return c >= '\0' && c < ' ';
 	});
 }

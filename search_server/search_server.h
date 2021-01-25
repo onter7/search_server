@@ -3,13 +3,10 @@
 #include <algorithm>
 #include <map>
 #include <set>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
-#include "string_processing.h"
 #include "document.h"
-#include "read_input_functions.h"
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
