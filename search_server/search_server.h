@@ -3,19 +3,13 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "document.h"
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
-
-enum class DocumentStatus {
-	ACTUAL,
-	IRRELEVANT,
-	BANNED,
-	REMOVED,
-};
 
 class SearchServer {
 public:

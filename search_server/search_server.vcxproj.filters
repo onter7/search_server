@@ -33,17 +33,8 @@
     <ClCompile Include="request_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test_runner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="search_server.h">
       <Filter>Header Files</Filter>
     </ClInclude>

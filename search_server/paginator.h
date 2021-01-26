@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <vector>
 
 template <typename Iterator>
 class IteratorRange {

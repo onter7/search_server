@@ -1,3 +1,6 @@
+#include <cmath>
+#include <stdexcept>
+
 #include "string_processing.h"
 #include "search_server.h"
 
