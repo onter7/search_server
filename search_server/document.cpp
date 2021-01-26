@@ -1,4 +1,4 @@
-#include "document.h"
+﻿#include "document.h"
 
 Document::Document()
 	: id(0)

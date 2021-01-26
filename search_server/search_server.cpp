@@ -1,4 +1,4 @@
-#include <cmath>
+﻿#include <cmath>
 #include <stdexcept>
 
 #include "string_processing.h"
