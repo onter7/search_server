@@ -53,5 +53,8 @@
     <ClInclude Include="request_queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="log_duration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

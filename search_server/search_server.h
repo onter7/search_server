@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "document.h"
+#include "log_duration.h"
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
@@ -26,6 +27,9 @@ public:
 	template <typename Predicate>
 	std::vector<Document> FindTopDocuments(const std::string& raw_query,
 		Predicate predicate) const {
+		using namespace std::literals;
+		LOG_DURATION("Operation time"s, std::cout);
+
 		const Query query = ParseQuery(raw_query);
 		auto matched_documents = FindAllDocuments(query, predicate);
 
