@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <deque>
 
 #include "search_server.h"
 #include "request_queue.h"
