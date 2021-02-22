@@ -44,7 +44,7 @@ size_t SearchServer::GetDocumentCount() const { return documents_.size(); }
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument(const std::string& raw_query,
 	int document_id) const {
 	using namespace std::literals;
-	LOG_DURATION("Operation time"s, std::cout);
+	LOG_DURATION("Operation time"s);
 
 	const Query query = ParseQuery(raw_query);
 	std::vector<std::string> matched_words;
@@ -143,7 +143,7 @@ std::set<int>::const_iterator SearchServer::end() const { return document_ids_.e
 
 const std::map<std::string, double>& SearchServer::GetWordFrequencies(int document_id) const {
 	if (documents_.count(document_id) == 0) {
-		return {};
+		return empty_map;
 	}
 	return documents_.at(document_id).word_to_freq;
 }

@@ -12,6 +12,8 @@
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
+const std::map<std::string, double> empty_map = {};
+
 class SearchServer {
 public:
 	explicit SearchServer(const std::string& stop_words);
@@ -28,7 +30,7 @@ public:
 	std::vector<Document> FindTopDocuments(const std::string& raw_query,
 		Predicate predicate) const {
 		using namespace std::literals;
-		LOG_DURATION("Operation time"s, std::cout);
+		LOG_DURATION("Operation time"s);
 
 		const Query query = ParseQuery(raw_query);
 		auto matched_documents = FindAllDocuments(query, predicate);
