@@ -24,6 +24,8 @@ void SearchServer::AddDocument(int document_id, const std::string& document,
 		if (!IsValidWord(word)) {
 			throw std::invalid_argument("Invalid word in document: " + word);
 		}
+	}
+	for (const std::string& word : words) {
 		word_to_document_freqs_[word][document_id] += inv_word_count;
 		word_to_freq[word] += inv_word_count;
 	}
