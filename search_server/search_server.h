@@ -12,8 +12,6 @@
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
-const std::map<std::string, double> empty_map = {};
-
 class SearchServer {
 public:
 	explicit SearchServer(const std::string& stop_words);
@@ -58,10 +56,6 @@ public:
 
 	std::tuple<std::vector<std::string>, DocumentStatus> MatchDocument(const std::string& raw_query,
 		int document_id) const;
-
-	std::set<int>::iterator begin();
-
-	std::set<int>::iterator end();
 
 	std::set<int>::const_iterator begin() const;
 

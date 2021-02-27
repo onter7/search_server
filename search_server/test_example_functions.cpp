@@ -1,45 +1,63 @@
-#include "test_example_functions.h"
+п»ї#include "test_example_functions.h"
 
 #include <iostream>
+#include <stdexcept>
 
-#include "search_server.h"
-#include "remove_duplicates.h"
-
-void AddDocument(SearchServer& search_server, int document_id, const std::string& document,
-	DocumentStatus status, const std::vector<int>& ratings) {
-	search_server.AddDocument(document_id, document, status, ratings);
+void PrintDocument(const Document& document) {
+    using namespace std::literals;
+    std::cout << "{ "s
+        << "document_id = "s << document.id << ", "s
+        << "relevance = "s << document.relevance << ", "s
+        << "rating = "s << document.rating << " }"s << std::endl;
 }
 
-void RemoveDuplicatesExample() {
-	using namespace std::literals;
+void PrintMatchDocumentResult(int document_id, const std::vector<std::string>& words, DocumentStatus status) {
+    using namespace std::literals;
+    std::cout << "{ "s
+        << "document_id = "s << document_id << ", "s
+        << "status = "s << static_cast<int>(status) << ", "s
+        << "words ="s;
+    for (const std::string& word : words) {
+        std::cout << ' ' << word;
+    }
+    std::cout << "}"s << std::endl;
+}
 
-	SearchServer search_server("and with"s);
+void AddDocument(SearchServer& search_server, int document_id, const std::string& document, DocumentStatus status,
+    const std::vector<int>& ratings) {
+    using namespace std::literals;
+    try {
+        search_server.AddDocument(document_id, document, status, ratings);
+    }
+    catch (const std::exception& e) {
+        std::cout << "РћС€РёР±РєР° РґРѕР±Р°РІР»РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚Р° "s << document_id << ": "s << e.what() << std::endl;
+    }
+}
 
-	AddDocument(search_server, 1, "funny pet and nasty rat"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-	AddDocument(search_server, 2, "funny pet with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
+void FindTopDocuments(const SearchServer& search_server, const std::string& raw_query) {
+    using namespace std::literals;
+    std::cout << "Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° РїРѕ Р·Р°РїСЂРѕСЃСѓ: "s << raw_query << std::endl;
+    try {
+        for (const Document& document : search_server.FindTopDocuments(raw_query)) {
+            PrintDocument(document);
+        }
+    }
+    catch (const std::exception& e) {
+        std::cout << "РћС€РёР±РєР° РїРѕРёСЃРєР°: "s << e.what() << std::endl;
+    }
+}
 
-	// дубликат документа 2, будет удалён
-	AddDocument(search_server, 3, "funny pet with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// отличие только в стоп-словах, считаем дубликатом
-	AddDocument(search_server, 4, "funny pet and curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// множество слов такое же, считаем дубликатом документа 1
-	AddDocument(search_server, 5, "funny funny pet and nasty nasty rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// добавились новые слова, дубликатом не является
-	AddDocument(search_server, 6, "funny pet and not very nasty rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// множество слов такое же, как в id 6, несмотря на другой порядок, считаем дубликатом
-	AddDocument(search_server, 7, "very nasty rat and not very funny pet"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// есть не все слова, не является дубликатом
-	AddDocument(search_server, 8, "pet with rat and rat and rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	// слова из разных документов, не является дубликатом
-	AddDocument(search_server, 9, "nasty rat with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-	std::cout << "Before duplicates removed: "s << search_server.GetDocumentCount() << std::endl;
-	RemoveDuplicates(search_server);
-	std::cout << "After duplicates removed: "s << search_server.GetDocumentCount() << std::endl;
+void MatchDocuments(const SearchServer& search_server, const std::string& query) {
+    using namespace std::literals;
+    try {
+        std::cout << "РњР°С‚С‡РёРЅРі РґРѕРєСѓРјРµРЅС‚РѕРІ РїРѕ Р·Р°РїСЂРѕСЃСѓ: "s << query << std::endl;
+        const int document_count = search_server.GetDocumentCount();
+        for (const int document_id : search_server) {            
+            const auto [words, status] = search_server.MatchDocument(query, document_id);
+            PrintMatchDocumentResult(document_id, words, status);
+        }
+    }
+    catch (const std::exception& e) {
+        std::cout << "РћС€РёР±РєР° РјР°С‚С‡РёРЅРіР° РґРѕРєСѓРјРµРЅС‚РѕРІ РЅР° Р·Р°РїСЂРѕСЃ "s << query << ": "s << e.what() << std::endl;
+    }
 }

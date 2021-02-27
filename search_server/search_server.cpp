@@ -6,6 +6,8 @@
 #include "search_server.h"
 #include "log_duration.h"
 
+const std::map<std::string, double> empty_map = {};
+
 SearchServer::SearchServer(const std::string& stop_words)
 	: SearchServer(SplitIntoWords(stop_words))
 {}
@@ -133,10 +135,6 @@ double SearchServer::ComputeWordInverseDocumentFreq(const std::string& word) con
 	return std::log(GetDocumentCount() * 1.0 / word_to_document_freqs_.at(word).size());
 }
 
-std::set<int>::iterator SearchServer::begin() { return document_ids_.begin(); }
-
-std::set<int>::iterator SearchServer::end() { return document_ids_.end(); }
-
 std::set<int>::const_iterator SearchServer::begin() const { return document_ids_.begin(); }
 
 std::set<int>::const_iterator SearchServer::end() const { return document_ids_.end(); }
@@ -150,11 +148,11 @@ const std::map<std::string, double>& SearchServer::GetWordFrequencies(int docume
 
 void SearchServer::RemoveDocument(int document_id) {
 	auto it = documents_.find(document_id);
-	if (it != documents_.end()) {
-		for (const auto& [word, freq] : it->second.word_to_freq) {
-			word_to_document_freqs_.at(word).erase(document_id);
-		}
-		documents_.erase(document_id);
-		document_ids_.erase(document_id);
+	if (it == documents_.end()) return;
+
+	for (const auto& [word, freq] : it->second.word_to_freq) {
+		word_to_document_freqs_.at(word).erase(document_id);
 	}
+	documents_.erase(document_id);
+	document_ids_.erase(document_id);
 }

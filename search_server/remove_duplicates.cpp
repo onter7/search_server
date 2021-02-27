@@ -1,3 +1,10 @@
+﻿#include <iostream>
+#include <iterator>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "remove_duplicates.h"
 
 void RemoveDuplicates(SearchServer& search_server) {
@@ -8,7 +15,7 @@ void RemoveDuplicates(SearchServer& search_server) {
 		std::vector<std::string> words;
 		words.reserve(word_to_freq.size());
 		for (const auto& [word, freq] : word_to_freq) {
-			words.emplace_back(word);
+			words.push_back(word);
 		}
 		words_to_document_ids[words].insert(document_id);
 	}
