@@ -3,16 +3,17 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "remove_duplicates.h"
 
 void RemoveDuplicates(SearchServer& search_server) {
 	using namespace std::literals;
-	std::map<std::vector<std::string>, std::set<int>> words_to_document_ids;
+	std::map<std::vector<std::string_view>, std::set<int>> words_to_document_ids;
 	for (const int document_id : search_server) {
 		const auto& word_to_freq = search_server.GetWordFrequencies(document_id);
-		std::vector<std::string> words;
+		std::vector<std::string_view> words;
 		words.reserve(word_to_freq.size());
 		for (const auto& [word, freq] : word_to_freq) {
 			words.push_back(word);
