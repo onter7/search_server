@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -91,6 +92,7 @@ public:
 	template <typename ExecutionPolicy>
 	std::tuple<std::vector<std::string_view>, DocumentStatus> MatchDocument(ExecutionPolicy policy,
 		std::string_view raw_query, int document_id) const {
+		static_assert(std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy> || std::is_same_v<ExecutionPolicy, std::execution::parallel_policy>);
 		using namespace std::literals;
 		LOG_DURATION("Operation time"s);
 
@@ -131,6 +133,7 @@ public:
 
 	template <typename ExecutionPolicy>
 	void RemoveDocument(ExecutionPolicy policy, int document_id) {
+		static_assert(std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy> || std::is_same_v<ExecutionPolicy, std::execution::parallel_policy>);
 		const auto it = documents_.find(document_id);
 		if (it == documents_.end()) return;
 		std::for_each(
@@ -173,7 +176,7 @@ private:
 			if (!IsValidWord(word)) {
 				throw std::invalid_argument("Invalid word: " + std::string(word));
 			}
-			result.insert({ std::make_move_iterator(word.begin()), std::make_move_iterator(word.end()) });
+			result.insert(std::string(word));
 		}
 		return result;
 	}
@@ -194,6 +197,7 @@ private:
 
 	template <typename ExecutionPolicy, typename Predicate>
 	std::vector<Document> FindAllDocuments(ExecutionPolicy policy, const Query& query, Predicate predicate) const {
+		static_assert(std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy> || std::is_same_v<ExecutionPolicy, std::execution::parallel_policy>);
 		ConcurrentMap<int, double> document_to_relevance;
 		std::for_each(policy, query.plus_words.begin(), query.plus_words.end(),
 			[this, predicate, &document_to_relevance](std::string_view word) {
