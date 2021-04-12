@@ -10,7 +10,7 @@ SearchServer::SearchServer(std::string_view stop_words)
 {}
 
 SearchServer::SearchServer(const std::string& stop_words)
-	: SearchServer(std::string_view(stop_words.c_str()))
+	: SearchServer(std::string_view(stop_words.c_str(), stop_words.size()))
 {}
 
 void SearchServer::AddDocument(int document_id, std::string_view document,
@@ -21,15 +21,15 @@ void SearchServer::AddDocument(int document_id, std::string_view document,
 	const std::vector<std::string_view> words = SplitIntoWordsNoStop(document);
 	const double inv_word_count = 1.0 / words.size();
 	std::map<std::string_view, double> word_to_freq;
-	for (std::string_view word : words) {
+	for (const std::string_view word : words) {
 		if (!IsValidWord(word)) {
 			throw std::invalid_argument("Invalid word in document: " + std::string(word));
 		}
 	}
 	DocumentData document_data;
-	for (std::string_view word : words) {
-		const auto pair = document_data.words.insert({ std::make_move_iterator(word.begin()), std::make_move_iterator(word.end()) });
-		std::string_view inserted_word(pair.first->c_str(), pair.first->size());
+	for (const std::string_view word : words) {
+		const auto [it, success] = document_data.words.insert(std::string(word));
+		const std::string_view inserted_word(it->c_str(), it->size());
 		word_to_document_freqs_[inserted_word][document_id] += inv_word_count;
 		document_data.word_to_freq[inserted_word] += inv_word_count;
 	}
@@ -69,7 +69,7 @@ bool SearchServer::IsStopWord(std::string_view word) const {
 
 std::vector<std::string_view> SearchServer::SplitIntoWordsNoStop(std::string_view text) const {
 	std::vector<std::string_view> words;
-	for (std::string_view word : SplitIntoWords(text)) {
+	for (const std::string_view word : SplitIntoWords(text)) {
 		if (!IsStopWord(word)) {
 			words.push_back(word);
 		}
@@ -103,7 +103,7 @@ SearchServer::QueryWord SearchServer::ParseQueryWord(std::string_view text) cons
 
 SearchServer::Query SearchServer::ParseQuery(std::string_view text) const {
 	Query query;
-	for (std::string_view word : SplitIntoWords(text)) {
+	for (const std::string_view word : SplitIntoWords(text)) {
 		const QueryWord query_word = ParseQueryWord(word);
 		if (!query_word.is_stop) {
 			if (query_word.is_minus) {
