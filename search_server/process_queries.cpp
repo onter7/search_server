@@ -7,29 +7,29 @@
 std::vector<std::vector<Document>> ProcessQueries(
 	const SearchServer& search_server,
 	const std::vector<std::string>& queries) {
-	std::vector<std::vector<Document>> result(queries.size());
+	std::vector<std::vector<Document>> queries_results(queries.size());
 	std::transform(
 		std::execution::par,
 		queries.begin(),
 		queries.end(),
-		result.begin(),
-		[&search_server](std::string_view query) {
+		queries_results.begin(),
+		[&search_server](const std::string& query) {
 			return search_server.FindTopDocuments(query);
 		}
 	);
-	return result;
+	return queries_results;
 }
 
 std::vector<Document> ProcessQueriesJoined(
 	const SearchServer& search_server,
 	const std::vector<std::string>& queries) {
-	auto query_results = ProcessQueries(search_server, queries);
-	std::vector<Document> result = std::reduce(
+	const auto queries_results = ProcessQueries(search_server, queries);
+	const std::vector<Document> result = std::reduce(
 		std::execution::par,
-		query_results.begin(),
-		query_results.end(),
+		queries_results.begin(),
+		queries_results.end(),
 		std::vector<Document>{},
-		[](auto result, const auto documents) {
+		[](auto result, const auto& documents) {
 			result.insert(result.end(), documents.begin(), documents.end());
 			return result;
 		}
