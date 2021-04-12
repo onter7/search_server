@@ -33,12 +33,12 @@ public:
 	{}
 
 	Access operator[](const Key& key) {
-		auto index = GetBucketIndex(key);
+		const auto index = static_cast<uint64_t>(key) % buckets_.size();
 		return Access(key, buckets_[index]);
 	}
 
 	void Erase(const Key& key) {
-		auto index = GetBucketIndex(key);
+		const auto index = static_cast<uint64_t>(key) % buckets_.size();
 		Bucket& bucket = buckets_[index];
 		std::lock_guard guard(bucket.mutex);
 		bucket.map.erase(key);
@@ -46,19 +46,13 @@ public:
 
 	std::map<Key, Value> BuildOrdinaryMap() {
 		std::map<Key, Value> result;
-		for (auto& bucket : buckets_) {
-			std::lock_guard guard(bucket.mutex);
-			for (const auto& [key, value] : bucket.map) {
-				result[key] = value;
-			}
+		for (auto& [mutex, map] : buckets_) {
+			std::lock_guard guard(mutex);
+			result.insert(map.begin(), map.end());
 		}
 		return result;
 	}
 
 private:
 	std::vector<Bucket> buckets_;
-
-	uint64_t GetBucketIndex(const Key& key) const {
-		return static_cast<uint64_t>(key) % buckets_.size();
-	}
 };
