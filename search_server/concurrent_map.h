@@ -15,7 +15,7 @@ private:
 		std::map<Key, Value> map;
 	};
 
-	static const size_t DEFAULT_BUCKET_COUNT = 8;
+	static const std::size_t DEFAULT_BUCKET_COUNT = 8;
 public:
 	static_assert(std::is_integral_v<Key>, "ConcurrentMap supports only integer keys");
 
@@ -28,18 +28,16 @@ public:
 		{}
 	};
 
-	explicit ConcurrentMap(size_t bucket_count = DEFAULT_BUCKET_COUNT)
+	explicit ConcurrentMap(std::size_t bucket_count = DEFAULT_BUCKET_COUNT)
 		: buckets_(bucket_count)
 	{}
 
 	Access operator[](const Key& key) {
-		const auto index = static_cast<uint64_t>(key) % buckets_.size();
-		return Access(key, buckets_[index]);
+		return Access(key, GetBucket(key));
 	}
 
 	void Erase(const Key& key) {
-		const auto index = static_cast<uint64_t>(key) % buckets_.size();
-		Bucket& bucket = buckets_[index];
+		Bucket& bucket = GetBucket(key);
 		std::lock_guard guard(bucket.mutex);
 		bucket.map.erase(key);
 	}
@@ -55,4 +53,8 @@ public:
 
 private:
 	std::vector<Bucket> buckets_;
+
+	Bucket& GetBucket(const Key& key) {
+		return buckets_[static_cast<uint64_t>(key) % buckets_.size()];
+	}
 };

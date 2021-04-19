@@ -1,6 +1,6 @@
 #include <algorithm>
+#include <cstddef>
 #include <execution>
-#include <string_view>
 
 #include "process_queries.h"
 
@@ -23,16 +23,21 @@ std::vector<std::vector<Document>> ProcessQueries(
 std::vector<Document> ProcessQueriesJoined(
 	const SearchServer& search_server,
 	const std::vector<std::string>& queries) {
-	const auto queries_results = ProcessQueries(search_server, queries);
-	const std::vector<Document> result = std::reduce(
+	auto queries_results = ProcessQueries(search_server, queries);
+	const std::size_t result_size = std::transform_reduce(
 		std::execution::par,
 		queries_results.begin(),
 		queries_results.end(),
-		std::vector<Document>{},
-		[](auto result, const auto& documents) {
-			result.insert(result.end(), documents.begin(), documents.end());
-			return result;
+		std::size_t(0),
+		std::plus<>{},
+		[](const std::vector<Document>& documents) {
+			return documents.size();
 		}
 	);
+	std::vector<Document> result;
+	result.reserve(result_size);
+	for (const auto& documents : queries_results) {
+		result.insert(result.end(), documents.begin(), documents.end());
+	}
 	return result;
 }

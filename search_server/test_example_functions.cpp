@@ -23,7 +23,7 @@ void PrintMatchDocumentResult(int document_id, const std::vector<std::string_vie
 	std::cout << "}"s << std::endl;
 }
 
-void AddDocument(SearchServer& search_server, int document_id, const std::string& document, DocumentStatus status,
+void AddDocument(SearchServer& search_server, int document_id, const std::string_view document, DocumentStatus status,
 	const std::vector<int>& ratings) {
 	using namespace std::literals;
 	try {
@@ -34,7 +34,7 @@ void AddDocument(SearchServer& search_server, int document_id, const std::string
 	}
 }
 
-void FindTopDocuments(const SearchServer& search_server, const std::string& raw_query) {
+void FindTopDocuments(const SearchServer& search_server, const std::string_view raw_query) {
 	using namespace std::literals;
 	std::cout << "Результаты поиска по запросу: "s << raw_query << std::endl;
 	try {
@@ -47,7 +47,7 @@ void FindTopDocuments(const SearchServer& search_server, const std::string& raw_
 	}
 }
 
-void MatchDocuments(const SearchServer& search_server, const std::string& query) {
+void MatchDocuments(const SearchServer& search_server, const std::string_view query) {
 	using namespace std::literals;
 	try {
 		std::cout << "Матчинг документов по запросу: "s << query << std::endl;
