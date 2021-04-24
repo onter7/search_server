@@ -10,36 +10,35 @@
 using namespace std;
 
 int main() {
-    SearchServer search_server("and with"s);
+	SearchServer search_server("and with"s);
 
-    for (
-        int id = 0;
-        const string & text : {
-        "white cat and yellow hat"s,
-            "curly cat curly tail"s,
-            "nasty dog with big eyes"s,
-            "nasty pigeon john"s,
-    }
-    ) {
-        search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, { 1, 2 });
-    }
+	const vector<string> queries = {
+		"white cat and yellow hat"s,
+		"curly cat curly tail"s,
+		"nasty dog with big eyes"s,
+		"nasty pigeon john"s
+	};
 
-    cout << "ACTUAL by default:"s << endl;
-    // последовательная версия
-    for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
-        PrintDocument(document);
-    }
-    cout << "BANNED:"s << endl;
-    // последовательная версия
-    for (const Document& document : search_server.FindTopDocuments(execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
-        PrintDocument(document);
-    }
+	for (size_t i = 0; i < queries.size(); ++i) {
+		search_server.AddDocument(i + 1, queries[i], DocumentStatus::ACTUAL, { 1, 2 });
+	}
 
-    cout << "Even ids:"s << endl;
-    // параллельная версия
-    for (const Document& document : search_server.FindTopDocuments(execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
-        PrintDocument(document);
-    }
+	cout << "ACTUAL by default:"s << endl;
+	// последовательная версия
+	for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
+		PrintDocument(document);
+	}
+	cout << "BANNED:"s << endl;
+	// последовательная версия
+	for (const Document& document : search_server.FindTopDocuments(execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
+		PrintDocument(document);
+	}
 
-    return 0;
+	cout << "Even ids:"s << endl;
+	// параллельная версия
+	for (const Document& document : search_server.FindTopDocuments(execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
+		PrintDocument(document);
+	}
+
+	return 0;
 }

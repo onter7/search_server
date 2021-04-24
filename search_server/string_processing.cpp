@@ -5,7 +5,7 @@
 std::vector<std::string_view> SplitIntoWords(std::string_view text) {
 	std::vector<std::string_view> result;
 	while (true) {
-		const std::size_t space = text.find(' ');
+		const std::string_view::size_type space = text.find(' ');
 		if (space == text.npos) {
 			result.push_back(text.substr());
 			break;

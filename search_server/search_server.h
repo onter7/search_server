@@ -93,30 +93,28 @@ public:
 		static_assert(std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy> || std::is_same_v<ExecutionPolicy, std::execution::parallel_policy>);
 		const Query query = ParseQuery(raw_query);
 
-		const auto it = std::find_if(
-			std::execution::par,
+		const bool contains_minus_words = std::any_of(
+			policy,
 			query.minus_words.begin(),
 			query.minus_words.end(),
 			[this, document_id](const std::string_view word) {
-				return word_to_document_freqs_.at(word).count(document_id);
+				return word_to_document_freqs_.count(word) && word_to_document_freqs_.at(word).count(document_id);
 			}
 		);
 
 		std::vector<std::string_view> matched_words;
-		if (it == query.minus_words.end()) {
-			matched_words.resize(query.plus_words.size());
-			std::atomic_int size = 0;
-			std::for_each(
-				std::execution::par,
+		if (!contains_minus_words) {
+			matched_words.resize(query.plus_words.size());			
+			const auto it = std::copy_if(
+				policy,
 				query.plus_words.begin(),
 				query.plus_words.end(),
-				[this, &matched_words, &size, document_id](const std::string_view word) {
-					if (word_to_document_freqs_.count(word) && word_to_document_freqs_.at(word).count(document_id)) {
-						matched_words[size++] = word;
-					}
+				matched_words.begin(),
+				[this, document_id](const std::string_view word) {
+					return word_to_document_freqs_.count(word) && word_to_document_freqs_.at(word).count(document_id);
 				}
 			);
-			matched_words.resize(size);
+			matched_words.erase(it, matched_words.end());
 		}
 
 		return { matched_words, documents_.at(document_id).status };
@@ -197,7 +195,7 @@ private:
 	std::vector<Document> GetMatchedWords(const std::map<int, double>& document_to_relevance) const;
 
 	template <typename Predicate>
-	std::vector<Document> FindAllDocumentsSequenced(const Query& query, Predicate predicate) const {
+	std::vector<Document> FindAllDocuments([[maybe_unused]] std::execution::sequenced_policy, const Query& query, Predicate predicate) const {
 		std::map<int, double> document_to_relevance;
 		for (const std::string_view word : query.plus_words) {
 			if (word_to_document_freqs_.count(word) == 0) {
@@ -227,9 +225,9 @@ private:
 	}
 
 	template <typename Predicate>
-	std::vector<Document> FindAllDocumentsParallel(const Query& query, Predicate predicate) const {
+	std::vector<Document> FindAllDocuments(std::execution::parallel_policy policy, const Query& query, Predicate predicate) const {
 		ConcurrentMap<int, double> document_to_relevance;
-		std::for_each(std::execution::par, query.plus_words.begin(), query.plus_words.end(),
+		std::for_each(policy, query.plus_words.begin(), query.plus_words.end(),
 			[this, predicate, &document_to_relevance](const std::string_view word) {
 				if (word_to_document_freqs_.count(word)) {
 					const double inverse_document_freq = ComputeWordInverseDocumentFreq(word);
@@ -244,7 +242,7 @@ private:
 			}
 		);
 
-		std::for_each(std::execution::par, query.minus_words.begin(), query.minus_words.end(),
+		std::for_each(policy, query.minus_words.begin(), query.minus_words.end(),
 			[this, &document_to_relevance](const std::string_view word) {
 				if (word_to_document_freqs_.count(word)) {
 					for (const auto [document_id, _] : word_to_document_freqs_.at(word)) {
@@ -255,16 +253,5 @@ private:
 		);
 
 		return GetMatchedWords(document_to_relevance.BuildOrdinaryMap());
-	}
-
-	template <typename ExecutionPolicy, typename Predicate>
-	std::vector<Document> FindAllDocuments(ExecutionPolicy policy, const Query& query, Predicate predicate) const {
-		static_assert(std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy> || std::is_same_v<ExecutionPolicy, std::execution::parallel_policy>);
-		if (std::is_same_v<ExecutionPolicy, std::execution::sequenced_policy>) {
-			return FindAllDocumentsSequenced(query, predicate);
-		}
-		else {
-			return FindAllDocumentsParallel(query, predicate);
-		}
 	}
 };

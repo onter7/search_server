@@ -23,7 +23,7 @@ std::vector<std::vector<Document>> ProcessQueries(
 std::vector<Document> ProcessQueriesJoined(
 	const SearchServer& search_server,
 	const std::vector<std::string>& queries) {
-	auto queries_results = ProcessQueries(search_server, queries);
+	const auto queries_results = ProcessQueries(search_server, queries);
 	const std::size_t result_size = std::transform_reduce(
 		std::execution::par,
 		queries_results.begin(),
