@@ -1,8 +1,9 @@
 # Search Server
 
-A program for searching documents by search queries and ranking them.
+Document search engine, searches for documents by queries and ranks them.
 
 ## Description
+
 * allows to set stop words, filter search results by "minus words" and document status
 * [TF-IDF](https://en.wikipedia.org/wiki/Tf–idf) is used for ranking documents
 * supports parallel processing of search queries
