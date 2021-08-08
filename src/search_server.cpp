@@ -41,7 +41,7 @@ void SearchServer::AddDocument(int document_id, std::string_view document,
 std::vector<Document> SearchServer::FindTopDocuments(std::string_view raw_query, DocumentStatus doc_status) const {
 	return FindTopDocuments(raw_query, [doc_status](int document_id, DocumentStatus status, int rating) {
 		return status == doc_status;
-		});
+	});
 }
 
 std::vector<Document> SearchServer::FindTopDocuments(std::string_view raw_query) const {
@@ -148,6 +148,5 @@ std::vector<Document> SearchServer::GetMatchedWords(const std::map<int, double>&
 		matched_documents.push_back(
 			{ document_id, relevance, documents_.at(document_id).rating });
 	}
-
 	return matched_documents;
 }
